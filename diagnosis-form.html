@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediScan Pro - Medical Assessment Form</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8fafc;
+    }
+    
+    .medical-header {
+      background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+    }
+    
+    .medical-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s ease;
+    }
+    
+    .medical-card:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    }
+    
+    .medical-button {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      transition: all 0.2s ease;
+    }
+    
+    .medical-button:hover {
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
+      transform: translateY(-1px);
+    }
+    
+    .success-button {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    
+    .success-button:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      transform: translateY(-1px);
+    }
+    
+    .step-content {
+      display: none;
+    }
+    
+    .step-content.active {
+      display: block;
+    }
+    
+    .medical-grid {
+      background-image: 
+        linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    
+    .medical-badge {
+      background: #f0f9ff;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+    }
+    
+    .mono-font {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    .form-error {
+      border-color: #dc2626 !important;
+    }
+    
+    .pulse-dot {
+      animation: pulse-dot 2s infinite;
+    }
+    
+    @keyframes pulse-dot {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+      }
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+      }
+    }
+    
+    .error-message {
+      color: #dc2626;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+    
+    .scroll-to-error {
+      animation: pulse-error 1.5s ease-in-out;
+    }
+    
+    @keyframes pulse-error {
+      0% { background-color: rgba(220, 38, 38, 0.1); }
+      50% { background-color: rgba(220, 38, 38, 0.3); }
+      100% { background-color: rgba(220, 38, 38, 0.1); }
+    }
+  </style>
+</head>
+<body class="medical-grid">
+  <!-- Medical Header -->
+  <header class="medical-header shadow-lg">
+    <div class="container mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-md">
+            <i class="fas fa-heartbeat text-2xl text-blue-600"></i>
+          </div>
+          <div>
+            <h1 class="text-2xl font-bold text-white">MediScan Pro</h1>
+            <p class="text-blue-100 text-sm">AI Medical Assessment</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="hidden md:flex items-center space-x-2">
+            <div class="w-3 h-3 bg-green-400 rounded-full pulse-dot"></div>
+            <span class="text-green-100 text-sm font-medium">AI Ready</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-6 py-8 max-w-4xl">
+    <div class="medical-card rounded-2xl shadow-lg">
+      <!-- Progress Steps -->
+      <div class="p-8 border-b border-gray-200">
+        <div class="flex justify-between items-center relative">
+          <div class="flex flex-col items-center relative z-10" id="step-indicator-1">
+            <div class="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg">
+              <i class="fas fa-user text-lg"></i>
+            </div>
+            <span class="mt-3 text-sm font-medium text-blue-600">Patient Info</span>
+          </div>
+          <div class="flex flex-col items-center relative z-10" id="step-indicator-2">
+            <div class="w-12 h-12 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center">
+              <i class="fas fa-file-medical text-lg"></i>
+            </div>
+            <span class="mt-3 text-sm font-medium text-gray-500">Medical History</span>
+          </div>
+          <div class="flex flex-col items-center relative z-10" id="step-indicator-3">
+            <div class="w-12 h-12 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center">
+              <i class="fas fa-stethoscope text-lg"></i>
+            </div>
+            <span class="mt-3 text-sm font-medium text-gray-500">Symptoms</span>
+          </div>
+          <div class="flex flex-col items-center relative z-10" id="step-indicator-4">
+            <div class="w-12 h-12 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center">
+              <i class="fas fa-brain text-lg"></i>
+            </div>
+            <span class="mt-3 text-sm font-medium text-gray-500">AI Analysis</span>
+          </div>
+          <!-- Progress Bar -->
+          <div class="absolute top-6 left-0 right-0 h-2 bg-gray-200 -z-10 rounded-full">
+            <div id="progress-bar" class="h-full bg-blue-600 transition-all duration-500 rounded-full" style="width: 25%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Content -->
+      <div class="p-8">
+        <h1 id="step-title" class="text-3xl font-bold text-gray-900 mb-3">Patient Information</h1>
+        <p id="step-description" class="text-gray-600 mb-8">Please provide your basic information for medical assessment.</p>
+
+        <form id="medicalAssessmentForm">
+          <!-- Step 1: Patient Information -->
+          <div id="step-1" class="step-content active space-y-6">
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label for="firstName" class="block text-sm font-semibold text-gray-700 mb-2">First Name *</label>
+                <input type="text" id="firstName" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                <div class="error-message" id="firstName-error"></div>
+              </div>
+              <div>
+                <label for="lastName" class="block text-sm font-semibold text-gray-700 mb-2">Last Name *</label>
+                <input type="text" id="lastName" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                <div class="error-message" id="lastName-error"></div>
+              </div>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6">
+              <div>
+                <label for="age" class="block text-sm font-semibold text-gray-700 mb-2">Age *</label>
+                <input type="number" id="age" min="1" max="120" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                <div class="error-message" id="age-error"></div>
+              </div>
+              <div>
+                <label for="gender" class="block text-sm font-semibold text-gray-700 mb-2">Gender *</label>
+                <select id="gender" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                  <option value="">Select gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+                <div class="error-message" id="gender-error"></div>
+              </div>
+              <div>
+                <label for="bloodType" class="block text-sm font-semibold text-gray-700 mb-2">Blood Type</label>
+                <select id="bloodType" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                  <option value="">Unknown</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email Address *</label>
+                <input type="email" id="email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                <div class="error-message" id="email-error"></div>
+              </div>
+              <div>
+                <label for="phone" class="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
+                <input type="tel" id="phone" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Medical History -->
+          <div id="step-2" class="step-content space-y-6">
+            <div>
+              <label for="conditions" class="block text-sm font-semibold text-gray-700 mb-2">Existing Medical Conditions</label>
+              <textarea id="conditions" rows="4" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="List any chronic conditions, previous diagnoses, or ongoing health issues..."></textarea>
+              <p class="text-gray-500 text-sm mt-1">Examples: Diabetes, Hypertension, Asthma, Heart Disease</p>
+            </div>
+            <div>
+              <label for="medications" class="block text-sm font-semibold text-gray-700 mb-2">Current Medications</label>
+              <textarea id="medications" rows="4" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="List all medications, supplements, and dosages you're currently taking..."></textarea>
+              <p class="text-gray-500 text-sm mt-1">Include prescription drugs, over-the-counter medications, and supplements</p>
+            </div>
+            <div>
+              <label for="allergies" class="block text-sm font-semibold text-gray-700 mb-2">Allergies & Adverse Reactions</label>
+              <textarea id="allergies" rows="3" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="List any known allergies to medications, foods, or environmental factors..."></textarea>
+              <p class="text-gray-500 text-sm mt-1">Include drug allergies, food allergies, and environmental sensitivities</p>
+            </div>
+            <div>
+              <label for="familyHistory" class="block text-sm font-semibold text-gray-700 mb-2">Family Medical History</label>
+              <textarea id="familyHistory" rows="3" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Describe any significant medical conditions in your immediate family..."></textarea>
+              <p class="text-gray-500 text-sm mt-1">Include conditions in parents, siblings, and grandparents</p>
+            </div>
+          </div>
+
+          <!-- Step 3: Current Symptoms -->
+          <div id="step-3" class="step-content space-y-6">
+            <div class="bg-blue-50 rounded-xl p-6 border border-blue-200 mb-6">
+              <div class="flex items-center mb-3">
+                <i class="fas fa-info-circle text-blue-600 mr-3"></i>
+                <h4 class="font-semibold text-blue-900">AI Symptom Analysis</h4>
+              </div>
+              <p class="text-blue-800 text-sm">Our AI system will analyze your symptom description to provide accurate medical insights. Please be as detailed and specific as possible.</p>
+            </div>
+            
+            <div>
+              <label for="symptomDescription" class="block text-sm font-semibold text-gray-700 mb-2">Detailed Symptom Description *</label>
+              <textarea id="symptomDescription" rows="6" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Describe all your symptoms in detail. Include when they started, how they feel, what makes them better or worse, and any patterns you've noticed..." required></textarea>
+              <div class="error-message" id="symptomDescription-error"></div>
+              <p class="text-gray-500 text-sm mt-2">
+                <strong>Examples:</strong> "I have severe headache with nausea and sensitivity to light that started 2 days ago" or "I feel very tired, have frequent urination, and excessive thirst for the past week"
+              </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label for="symptomDuration" class="block text-sm font-semibold text-gray-700 mb-2">Duration of Symptoms *</label>
+                <select id="symptomDuration" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                  <option value="">Select duration</option>
+                  <option value="less-than-24h">Less than 24 hours</option>
+                  <option value="1-3-days">1-3 days</option>
+                  <option value="4-7-days">4-7 days</option>
+                  <option value="1-2-weeks">1-2 weeks</option>
+                  <option value="2-4-weeks">2-4 weeks</option>
+                  <option value="1-3-months">1-3 months</option>
+                  <option value="more-than-3-months">More than 3 months</option>
+                </select>
+                <div class="error-message" id="symptomDuration-error"></div>
+              </div>
+              <div>
+                <label for="symptomSeverity" class="block text-sm font-semibold text-gray-700 mb-2">Severity Level *</label>
+                <select id="symptomSeverity" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                  <option value="">Select severity</option>
+                  <option value="mild">Mild (minimal impact on daily activities)</option>
+                  <option value="moderate">Moderate (some interference with activities)</option>
+                  <option value="severe">Severe (significant impact on daily life)</option>
+                  <option value="emergency">Emergency (requires immediate attention)</option>
+                </select>
+                <div class="error-message" id="symptomSeverity-error"></div>
+              </div>
+            </div>
+            
+            <div>
+              <label for="triggeringFactors" class="block text-sm font-semibold text-gray-700 mb-2">Triggering or Relieving Factors</label>
+              <textarea id="triggeringFactors" rows="3" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="What makes your symptoms better or worse? Any specific triggers you've noticed?"></textarea>
+              <p class="text-gray-500 text-sm mt-1">Examples: Exercise, stress, certain foods, weather changes, rest, medications</p>
+            </div>
+          </div>
+
+          <!-- Step 4: AI Analysis & Consent -->
+          <div id="step-4" class="step-content space-y-6">
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 border border-blue-200">
+              <div class="text-center mb-6">
+                <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i class="fas fa-brain text-white text-3xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">AI Medical Analysis</h3>
+                <p class="text-gray-600">Our advanced AI system will analyze your symptoms using machine learning algorithms trained on medical data.</p>
+              </div>
+              
+              <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-lg p-4 border border-blue-100">
+                  <div class="flex items-center mb-2">
+                    <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                    <span class="font-semibold text-gray-900">94.2% Accuracy</span>
+                  </div>
+                  <p class="text-gray-600 text-sm">Trained on extensive medical datasets</p>
+                </div>
+                <div class="bg-white rounded-lg p-4 border border-blue-100">
+                  <div class="flex items-center mb-2">
+                    <i class="fas fa-shield-alt text-blue-600 mr-2"></i>
+                    <span class="font-semibold text-gray-900">HIPAA Compliant</span>
+                  </div>
+                  <p class="text-gray-600 text-sm">Your data is secure and protected</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="space-y-6">
+              <div class="flex items-start space-x-3">
+                <input type="checkbox" id="medicalConsent" class="mt-1 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500" required>
+                <div>
+                  <label for="medicalConsent" class="text-sm font-semibold text-gray-700">
+                    Medical Data Processing Consent *
+                  </label>
+                  <p class="text-gray-600 text-sm mt-1">
+                    I consent to the processing of my medical information for AI-powered diagnostic analysis. I understand this is for informational purposes and does not replace professional medical consultation.
+                  </p>
+                </div>
+              </div>
+              <div class="error-message" id="medicalConsent-error"></div>
+              
+              <div class="flex items-start space-x-3">
+                <input type="checkbox" id="disclaimerConsent" class="mt-1 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500" required>
+                <div>
+                  <label for="disclaimerConsent" class="text-sm font-semibold text-gray-700">
+                    Medical Disclaimer Agreement *
+                  </label>
+                  <p class="text-gray-600 text-sm mt-1">
+                    I understand that this AI analysis is for educational and informational purposes only and should not be used as a substitute for professional medical advice, diagnosis, or treatment. I will consult with a healthcare provider for any medical concerns.
+                  </p>
+                </div>
+              </div>
+              <div class="error-message" id="disclaimerConsent-error"></div>
+              
+              <div class="flex items-start space-x-3">
+                <input type="checkbox" id="researchConsent" class="mt-1 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                <div>
+                  <label for="researchConsent" class="text-sm font-semibold text-gray-700">
+                    Research Participation (Optional)
+                  </label>
+                  <p class="text-gray-600 text-sm mt-1">
+                    I agree to contribute anonymized data to medical research to help improve AI diagnostic capabilities and advance healthcare technology.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+              <div class="flex items-center text-yellow-800">
+                <i class="fas fa-exclamation-triangle mr-3"></i>
+                <div>
+                  <p class="font-semibold">Important Medical Notice</p>
+                  <p class="text-sm mt-1">If you are experiencing a medical emergency, please call emergency services immediately. This AI tool is not intended for emergency situations.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div class="flex justify-between pt-8 border-t border-gray-200 mt-8">
+            <button type="button" id="prevBtn" class="px-8 py-3 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50" disabled>
+              <i class="fas fa-arrow-left mr-2"></i>Previous
+            </button>
+            <button type="button" id="nextBtn" class="px-8 py-3 medical-button text-white rounded-lg font-semibold shadow-lg">
+              Next Step<i class="fas fa-arrow-right ml-2"></i>
+            </button>
+            <button type="submit" id="submitBtn" class="px-8 py-3 success-button text-white rounded-lg font-semibold shadow-lg hidden">
+              <i class="fas fa-brain mr-2"></i>Start AI Analysis
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+    // Configuration
+    const API_BASE_URL = 'http://localhost:5000'; // Change this to your Flask server URL
+    
+    let currentStep = 1;
+    const totalSteps = 4;
+
+    // DOM Elements
+    const nextBtn = document.getElementById("nextBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const submitBtn = document.getElementById("submitBtn");
+    const progressBar = document.getElementById("progress-bar");
+    const stepTitle = document.getElementById("step-title");
+    const stepDescription = document.getElementById("step-description");
+    const form = document.getElementById("medicalAssessmentForm");
+
+    // Step content configuration
+    const stepContent = {
+        1: {
+            title: "Patient Information",
+            description: "Please provide your basic information for medical assessment.",
+        },
+        2: {
+            title: "Medical History",
+            description: "Share your medical background to help our AI provide accurate analysis.",
+        },
+        3: {
+            title: "Current Symptoms",
+            description: "Describe your symptoms in detail for AI-powered analysis.",
+        },
+        4: {
+            title: "AI Analysis Setup",
+            description: "Review consent forms and prepare for AI medical analysis.",
+        },
+    };
+
+    // Required fields by step
+    const requiredFields = {
+        1: ["firstName", "lastName", "age", "gender", "email"],
+        2: [], // No required fields in medical history
+        3: ["symptomDescription", "symptomDuration", "symptomSeverity"],
+        4: ["medicalConsent", "disclaimerConsent"],
+    };
+
+    // Event Listeners
+    nextBtn.addEventListener("click", goToNextStep);
+    prevBtn.addEventListener("click", goToPrevStep);
+    form.addEventListener("submit", handleSubmit);
+
+    // Clear errors on input
+    document.querySelectorAll("input, select, textarea").forEach((element) => {
+        element.addEventListener("input", () => {
+            clearFieldError(element.id);
+        });
+    });
+
+    // Initialize
+    updateStepDisplay();
+
+    function goToNextStep() {
+        if (validateStep()) {
+            currentStep++;
+            updateStepDisplay();
+            
+            // Smooth scroll to top of form
+            document.querySelector('.medical-card').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+    }
+
+    function goToPrevStep() {
+        currentStep--;
+        updateStepDisplay();
+        
+        // Smooth scroll to top of form
+        document.querySelector('.medical-card').scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+        });
+    }
+
+    function updateStepDisplay() {
+        // Hide all steps
+        document.querySelectorAll(".step-content").forEach((step) => {
+            step.classList.remove("active");
+        });
+
+        // Show current step
+        document.getElementById(`step-${currentStep}`).classList.add("active");
+
+        // Update step indicators
+        for (let i = 1; i <= totalSteps; i++) {
+            const indicator = document.getElementById(`step-indicator-${i}`);
+            const circle = indicator.querySelector("div");
+            const text = indicator.querySelector("span");
+
+            if (i < currentStep) {
+                circle.className = "w-12 h-12 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg";
+                circle.innerHTML = '<i class="fas fa-check text-lg"></i>';
+                text.className = "mt-3 text-sm font-medium text-green-500";
+            } else if (i === currentStep) {
+                circle.className = "w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg";
+                text.className = "mt-3 text-sm font-medium text-blue-600";
+            } else {
+                circle.className = "w-12 h-12 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center";
+                text.className = "mt-3 text-sm font-medium text-gray-500";
+            }
+        }
+
+        // Update progress bar
+        const progress = (currentStep / totalSteps) * 100;
+        progressBar.style.width = `${progress}%`;
+
+        // Update title and description
+        stepTitle.textContent = stepContent[currentStep].title;
+        stepDescription.textContent = stepContent[currentStep].description;
+
+        // Update buttons
+        prevBtn.disabled = currentStep === 1;
+        prevBtn.classList.toggle("opacity-50", currentStep === 1);
+
+        if (currentStep === totalSteps) {
+            nextBtn.classList.add("hidden");
+            submitBtn.classList.remove("hidden");
+        } else {
+            nextBtn.classList.remove("hidden");
+            submitBtn.classList.add("hidden");
+        }
+    }
+
+    function validateStep() {
+        clearAllErrors();
+        let isValid = true;
+
+        // Check required fields
+        requiredFields[currentStep].forEach((fieldId) => {
+            const field = document.getElementById(fieldId);
+            if (!field.value.trim() || (field.type === "checkbox" && !field.checked)) {
+                showFieldError(fieldId, "This field is required");
+                isValid = false;
+            }
+        });
+
+        // Email validation
+        if (currentStep === 1) {
+            const email = document.getElementById("email");
+            if (email.value && !/\S+@\S+\.\S+/.test(email.value)) {
+                showFieldError("email", "Please enter a valid email address");
+                isValid = false;
+            }
+        }
+
+        // Age validation
+        if (currentStep === 1) {
+            const age = document.getElementById("age");
+            if (age.value) {
+                const ageNum = parseInt(age.value);
+                if (isNaN(ageNum) || ageNum < 1 || ageNum > 120) {
+                    showFieldError("age", "Please enter a valid age between 1 and 120");
+                    isValid = false;
+                }
+            }
+        }
+
+        // Symptom description validation
+        if (currentStep === 3) {
+            const symptomDesc = document.getElementById("symptomDescription");
+            if (symptomDesc.value.trim().length < 10) {
+                showFieldError("symptomDescription", "Please provide a more detailed description (at least 10 characters)");
+                isValid = false;
+            }
+        }
+
+        if (!isValid) {
+            // Highlight the first error field
+            const firstErrorField = document.querySelector('.form-error');
+            if (firstErrorField) {
+                firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstErrorField.classList.add('scroll-to-error');
+                setTimeout(() => {
+                    firstErrorField.classList.remove('scroll-to-error');
+                }, 2000);
+            }
+        }
+
+        return isValid;
+    }
+
+    function showFieldError(fieldId, message) {
+        const errorElement = document.getElementById(`${fieldId}-error`);
+        const inputElement = document.getElementById(fieldId);
+
+        if (errorElement) errorElement.textContent = message;
+        if (inputElement) {
+            inputElement.classList.add("form-error");
+            inputElement.focus();
+        }
+    }
+
+    function clearFieldError(fieldId) {
+        const errorElement = document.getElementById(`${fieldId}-error`);
+        const inputElement = document.getElementById(fieldId);
+
+        if (errorElement) errorElement.textContent = "";
+        if (inputElement) inputElement.classList.remove("form-error");
+    }
+
+    function clearAllErrors() {
+        document.querySelectorAll("[id$='-error']").forEach((element) => {
+            element.textContent = "";
+        });
+        document.querySelectorAll(".form-error").forEach((element) => {
+            element.classList.remove("form-error");
+        });
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+
+        // Validate the final step
+        if (!validateStep()) {
+            const firstError = document.querySelector('.form-error');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Analyzing Symptoms...';
+
+        try {
+            // Collect comprehensive form data
+            const formData = {
+                userId: `user-${Date.now()}`,
+                assessmentId: `ASS-${Date.now()}`,
+                patientInfo: {
+                    firstName: document.getElementById("firstName").value,
+                    lastName: document.getElementById("lastName").value,
+                    age: parseInt(document.getElementById("age").value),
+                    gender: document.getElementById("gender").value,
+                    bloodType: document.getElementById("bloodType").value,
+                    email: document.getElementById("email").value,
+                    phone: document.getElementById("phone").value,
+                },
+                medicalHistory: {
+                    conditions: document.getElementById("conditions").value,
+                    medications: document.getElementById("medications").value,
+                    allergies: document.getElementById("allergies").value,
+                    familyHistory: document.getElementById("familyHistory").value,
+                },
+                symptoms: {
+                    description: document.getElementById("symptomDescription").value,
+                    duration: document.getElementById("symptomDuration").value,
+                    severity: document.getElementById("symptomSeverity").value,
+                    triggers: document.getElementById("triggeringFactors").value,
+                },
+                consent: {
+                    medicalConsent: document.getElementById("medicalConsent").checked,
+                    disclaimerConsent: document.getElementById("disclaimerConsent").checked,
+                    researchConsent: document.getElementById("researchConsent").checked,
+                },
+                submittedAt: new Date().toISOString(),
+            };
+
+            // Show loading state
+            document.getElementById('step-4').innerHTML = `
+                <div class="text-center py-12">
+                    <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-spinner fa-spin text-blue-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Analyzing Your Symptoms</h3>
+                    <p class="text-gray-600 max-w-md mx-auto">Our AI system is processing your information. This may take a few moments...</p>
+                    <div class="mt-4 text-sm text-gray-500">
+                        <p>Connecting to AI server...</p>
+                    </div>
+                </div>
+            `;
+
+            // Call the actual Python Flask API
+            const aiAnalysis = await callPredictionAPI(formData.symptoms);
+
+            // Add AI results to form data
+            formData.aiAnalysis = aiAnalysis;
+
+            // Save to localStorage
+            const existingRecords = JSON.parse(localStorage.getItem("mediscan_records") || "[]");
+            existingRecords.push(formData);
+            localStorage.setItem("mediscan_records", JSON.stringify(existingRecords));
+
+            // Store current analysis for results page
+            localStorage.setItem("mediscan_current_analysis", JSON.stringify(formData));
+
+            // Redirect to results page
+            window.location.href = "results.html";
+            
+        } catch (error) {
+            console.error("Analysis error:", error);
+            
+            // Show error state
+            document.getElementById('step-4').innerHTML = `
+                <div class="bg-red-50 rounded-xl p-6 border border-red-200">
+                    <div class="flex items-center mb-3">
+                        <i class="fas fa-exclamation-triangle text-red-600 mr-3"></i>
+                        <h4 class="font-semibold text-red-900">Analysis Failed</h4>
+                    </div>
+                    <p class="text-red-800 mb-4">${error.message || 'We encountered an error while processing your request.'}</p>
+                    <div class="text-sm text-red-700 mb-4">
+                        <p><strong>Possible solutions:</strong></p>
+                        <ul class="list-disc list-inside mt-2">
+                            <li>Make sure the Flask server is running on http://localhost:5000</li>
+                            <li>Check your internet connection</li>
+                            <li>Try refreshing the page and submitting again</li>
+                        </ul>
+                    </div>
+                    <button id="retryBtn" class="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors">
+                        <i class="fas fa-redo mr-2"></i>Try Again
+                    </button>
+                </div>
+            `;
+            
+            // Add event listener for retry button
+            document.getElementById('retryBtn').addEventListener('click', () => {
+                window.location.reload();
+            });
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-brain mr-2"></i>Start AI Analysis';
+        }
+    }
+
+    // Call the actual Python Flask API
+    async function callPredictionAPI(symptoms) {
+        try {
+            console.log('Calling prediction API with symptoms:', symptoms);
+            
+            const response = await fetch(`${API_BASE_URL}/predict`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ symptoms: symptoms })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('API Response:', result);
+            
+            if (result.status === 'error') {
+                throw new Error(result.message);
+            }
+
+            return result;
+            
+        } catch (error) {
+            console.error('API call failed:', error);
+            
+            // Check if it's a network error (server not running)
+            if (error.message.includes('fetch')) {
+                throw new Error('Unable to connect to the AI server. Please make sure the Flask server is running on http://localhost:5000');
+            }
+            
+            throw error;
+        }
+    }
+});
+</script>
+</body>
+</html>
