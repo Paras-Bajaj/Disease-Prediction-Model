@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 import re
 import warnings
 from datetime import datetime
-import requests
+#import requests
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -492,4 +492,5 @@ if __name__ == '__main__':
     print("\n" + "=" * 50)
     
     app.run(host='0.0.0.0', port=5000, debug=False)
+
 
