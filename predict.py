@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 import re
 import warnings
 from datetime import datetime
-#import requests
+import os
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -24,6 +24,22 @@ vectorizer = None
 label_encoder = None
 preprocess_text_func = None
 model_ready = False
+
+@app.route('/')
+def home():
+    """Root endpoint with API information"""
+    return jsonify({
+        'message': 'MediScan Pro AI Diagnosis API is running!',
+        'endpoints': {
+            'predict': 'POST /predict - Predict disease from symptoms',
+            'health': 'GET /health - Health check', 
+            'retrain': 'POST /retrain - Retrain model'
+        },
+        'status': 'active',
+        'model_ready': model_ready,
+        'version': 'v2.1.0',
+        'timestamp': datetime.now().isoformat()
+    })
 
 def create_simple_preprocessing_function():
     """Create a simple text preprocessing function that doesn't require NLTK"""
@@ -483,14 +499,14 @@ else:
     print("The server will still run, but predictions may not work correctly.")
 
 if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))
     print("\n🚀 Starting Flask server...")
     print("📝 API endpoints:")
+    print("   - GET / - API information")
     print("   - POST /predict - Predict disease from symptoms")
     print("   - GET /health - Health check")
     print("   - POST /retrain - Retrain model")
-    print(f"   - Server URL: http://localhost:5000")
+    print(f"   - Server running on port: {port}")
     print("\n" + "=" * 50)
     
-    app.run(host='0.0.0.0', port=5000, debug=False)
-
-
+    app.run(host='0.0.0.0', port=port, debug=False)
