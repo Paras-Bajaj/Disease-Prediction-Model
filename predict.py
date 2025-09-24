@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 import re
 import warnings
 from datetime import datetime
-import os
+import requests
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -24,82 +24,6 @@ vectorizer = None
 label_encoder = None
 preprocess_text_func = None
 model_ready = False
-
-from flask import send_from_directory, render_template_string
-import os
-
-# Add this after your existing routes, before the main block
-
-@app.route('/')
-def serve_index():
-    """Serve the main index.html file"""
-    try:
-        # Try to serve from current directory
-        return send_from_directory('.', 'index.html')
-    except:
-        # Fallback: return a simple message with link
-        return """
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>MediScan Pro</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 40px; text-align: center; }
-                .btn { display: inline-block; padding: 12px 24px; background: #1e40af; 
-                      color: white; text-decoration: none; border-radius: 8px; margin: 10px; }
-            </style>
-        </head>
-        <body>
-            <h1>MediScan Pro - AI Medical Diagnosis</h1>
-            <p>API is running successfully!</p>
-            <div>
-                <a href="/diagnosis" class="btn">Start Diagnosis</a>
-                <a href="/health" class="btn">API Health Check</a>
-            </div>
-            <p style="margin-top: 30px; color: #666;">
-                If you're seeing this, make sure your index.html file is in the same directory as the Flask app.
-            </p>
-        </body>
-        </html>
-        """
-
-@app.route('/diagnosis')
-def serve_diagnosis():
-    """Serve the diagnosis page"""
-    try:
-        return send_from_directory('.', 'diagnosis.html')
-    except:
-        return "Diagnosis page not found. Make sure diagnosis.html exists in the current directory.", 404
-
-@app.route('/results')
-def serve_results():
-    """Serve the results page"""
-    try:
-        return send_from_directory('.', 'results.html')
-    except:
-        return "Results page not found. Make sure results.html exists in the current directory.", 404
-
-@app.route('/auth')
-def serve_auth():
-    """Serve the auth page"""
-    try:
-        return send_from_directory('.', 'auth.html')
-    except:
-        # If auth.html doesn't exist, redirect to diagnosis
-        return """
-        <script>
-            window.location.href = '/diagnosis';
-        </script>
-        """
-
-# Add static file serving for CSS, JS, images, etc.
-@app.route('/<path:filename>')
-def serve_static(filename):
-    """Serve static files"""
-    try:
-        return send_from_directory('.', filename)
-    except:
-        return "File not found", 404
 
 def create_simple_preprocessing_function():
     """Create a simple text preprocessing function that doesn't require NLTK"""
@@ -559,15 +483,12 @@ else:
     print("The server will still run, but predictions may not work correctly.")
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
     print("\n🚀 Starting Flask server...")
     print("📝 API endpoints:")
-    print("   - GET / - API information")
     print("   - POST /predict - Predict disease from symptoms")
     print("   - GET /health - Health check")
     print("   - POST /retrain - Retrain model")
-    print(f"   - Server running on port: {port}")
+    print(f"   - Server URL: http://localhost:5000")
     print("\n" + "=" * 50)
     
-    app.run(host='0.0.0.0', port=port, debug=False)
-
+    app.run(host='0.0.0.0', port=5000, debug=False)
