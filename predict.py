@@ -10,7 +10,7 @@ import re
 import warnings
 from datetime import datetime
 import requests
-
+import os 
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -482,13 +482,8 @@ else:
     print("❌ AI model initialization failed!")
     print("The server will still run, but predictions may not work correctly.")
 
-if __name__ == '__main__':
-    print("\n🚀 Starting Flask server...")
-    print("📝 API endpoints:")
-    print("   - POST /predict - Predict disease from symptoms")
-    print("   - GET /health - Health check")
-    print("   - POST /retrain - Retrain model")
-    print(f"   - Server URL: http://localhost:5000")
-    print("\n" + "=" * 50)
-    
-    app.run(host='0.0.0.0', port=5000, debug=False)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+
+
